@@ -1,7 +1,8 @@
-PKGNAME  = beluga
-DESTDIR ?=
-PREFIX  ?= /usr
-BINDIR   = $(PREFIX)/bin
+PKGNAME    = beluga
+DESTDIR   ?=
+PREFIX    ?= /usr
+BINDIR     = $(PREFIX)/bin
+SYSCONFDIR = /etc
 
 GOBIN       = _build/bin
 GOPROJROOT  = $(GOSRC)/$(PROJREPO)
@@ -48,7 +49,8 @@ validate:
 
 install:
 	@$(call stage,INSTALL)
-	install -D -m 00755 $(PKGNAME) $(DESTDIR)$(BINDIR)/$(PKGNAME)
+	install -Dm 00755 $(PKGNAME) $(DESTDIR)$(BINDIR)/$(PKGNAME)
+	install -Dm 00644 data/beluga.conf $(SYSCONFDIR)/beluga/beluga.conf
 	@$(call pass,INSTALL)
 
 uninstall:
