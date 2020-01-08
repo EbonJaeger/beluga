@@ -1,0 +1,13 @@
+[Unit]
+Description=Beluga Discord bot
+After=network.target beluga.socket
+Requires=beluga.socket
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/beluga start
+User=beluga
+Group=beluga
+
+[Install]
+WantedBy=multi-user.target

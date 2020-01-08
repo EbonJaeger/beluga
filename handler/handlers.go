@@ -37,4 +37,5 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// TODO: Implement actual message handling
 	log.Infof("Message recieved in channel '%s': %s\n", m.ChannelID, m.Content)
+	_, _ = s.ChannelMessageSend(m.ChannelID, "pong")
 }

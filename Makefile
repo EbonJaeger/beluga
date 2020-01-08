@@ -3,6 +3,7 @@ DESTDIR   ?=
 PREFIX    ?= /usr
 BINDIR     = $(PREFIX)/bin
 SYSCONFDIR = /etc
+SYSTEMD   ?= $(SYSCONFDIR)/systemd/system
 
 GOBIN       = _build/bin
 GOPROJROOT  = $(GOSRC)/$(PROJREPO)
@@ -50,7 +51,10 @@ validate:
 install:
 	@$(call stage,INSTALL)
 	install -Dm 00755 $(PKGNAME) $(DESTDIR)$(BINDIR)/$(PKGNAME)
+	ln -sf $(BINDIR)/$(PKGNAME) $(DESTDIR)$(BINDIR)/belugactl
 	install -Dm 00644 data/beluga.conf $(SYSCONFDIR)/beluga/beluga.conf
+	install -Dm 00644 data/beluga.service $(SYSTEMD)/beluga.service
+	install -Dm 00644 data/beluga.socket $(SYSTEMD)/beluga.socket
 	@$(call pass,INSTALL)
 
 uninstall:

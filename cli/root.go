@@ -26,6 +26,7 @@ func init() {
 
 	// Initialize subcommands
 	Root.RegisterCMD(Start)
+	Root.RegisterCMD(Stop)
 
 	// Initialize logging
 	log = waterlog.New(os.Stdout, "", log2.Ltime)
