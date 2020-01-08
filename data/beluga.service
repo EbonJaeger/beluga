@@ -6,6 +6,7 @@ Requires=beluga.socket
 [Service]
 Type=notify
 ExecStart=/usr/bin/beluga start
+ExecStop=/usr/bin/beluga stop
 User=beluga
 Group=beluga
 
