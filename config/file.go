@@ -1,18 +1,10 @@
 package config
 
 import (
-	"log"
-
 	"github.com/BurntSushi/toml"
 )
 
-const (
-	// DefaultSocket is the default socket path for the daemon
-	DefaultSocket = "/run/beluga.socket"
-)
-
 type config struct {
-	Socket  string   `toml:"socket"`
 	Token   string   `toml:"discord_bot_token"`
 	Plugins []string `toml:"plugins,omitempty"`
 }
@@ -30,12 +22,6 @@ func Load() error {
 	_, err := toml.DecodeFile(path, &Conf)
 	if err != nil {
 		return err
-	}
-
-	// Validate socket file
-	if len(Conf.Socket) == 0 {
-		Conf.Socket = DefaultSocket
-		log.Printf("No socket specified. Using default: %s\n", DefaultSocket)
 	}
 
 	return nil

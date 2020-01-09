@@ -39,10 +39,11 @@ func main() {
 
 	// Create our Discord client
 	Log.Infoln("Creating Discord session")
-	Session, err := discordgo.New("Bot " + config.Conf.Token)
+	s, err := discordgo.New("Bot " + config.Conf.Token)
 	if err != nil {
 		Log.Fatalf("Unable to initialize discordgo: %s\n", err.Error())
 	}
+	Session = s
 
 	// Connect our handlers
 	Session.AddHandler(OnReady)
@@ -60,7 +61,12 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
+	// Get to a new line
+	Log.Println("")
 
 	// Close the Discord session on close
-	Session.Close()
+	if err = Session.Close(); err != nil {
+		Log.Fatalf("Error while closing Discord connection: %s\n", err.Error())
+	}
+	Log.Goodln("Beluga shut down successfully!")
 }

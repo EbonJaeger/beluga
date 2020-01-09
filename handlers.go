@@ -50,7 +50,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		// Make a Command
 		var bm = Command{
 			ChannelID:    m.Message.ChannelID,
-			Command:      cmd,
+			Command:      strings.ToLower(cmd),
 			Message:      msg,
 			MessageNoCmd: strings.TrimPrefix(msg, "!"+cmd),
 			Sender:       m.Message.Author,

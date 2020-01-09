@@ -84,6 +84,12 @@ func (pm *BelugaPluginManager) LoadPlugins() error {
 
 // SendCommand sends a chat command to all registered handlers
 func (pm *BelugaPluginManager) SendCommand(cmd Command) {
+	// Send to hunter2 plugin
+	if PluginManager.IsEnabled("Hunter2") {
+		HunterPlugin.Handle(Session, cmd)
+	}
+
+	// Send to all third-party plugins
 	for _, handleFunc := range pm.Plugins {
 		handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
 	}
