@@ -2,6 +2,7 @@ PKGNAME    = beluga
 DESTDIR   ?=
 PREFIX    ?= /usr
 BINDIR     = $(PREFIX)/bin
+PLUGINDIR  =$(PREFIX)/share/$(PKGNAME)
 SYSCONFDIR = /etc
 SYSTEMD   ?= $(SYSCONFDIR)/systemd/system
 
@@ -9,7 +10,7 @@ GOBIN       = _build/bin
 GOPROJROOT  = $(GOSRC)/$(PROJREPO)
 
 GOLDFLAGS   = -ldflags "-s -w"
-GOTAGS      = --tags "libsqlite3 linux"
+GOTAGS      = --tags "linux"
 GOCC        = go
 GOFMT       = $(GOCC) fmt -x
 GOGET       = $(GOCC) get $(GOLDFLAGS)
@@ -47,11 +48,11 @@ validate:
 	@$(GOLINT) ./...
 	@$(call pass,LINT)
 
-
 install:
 	@$(call stage,INSTALL)
 	install -Dm 00755 $(PKGNAME) $(DESTDIR)$(BINDIR)/$(PKGNAME)
 	ln -sf $(BINDIR)/$(PKGNAME) $(DESTDIR)$(BINDIR)/belugactl
+	install -dm 00755 $(PLUGINDIR)
 	install -Dm 00644 data/beluga.conf $(SYSCONFDIR)/beluga/beluga.conf
 	install -Dm 00644 data/beluga.service $(SYSTEMD)/beluga.service
 	install -Dm 00644 data/beluga.socket $(SYSTEMD)/beluga.socket

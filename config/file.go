@@ -11,8 +11,9 @@ const (
 )
 
 type config struct {
-	Socket string `toml:"socket"`
-	Token  string `toml:"discord_bot_token"`
+	Socket  string   `toml:"socket"`
+	Token   string   `toml:"discord_bot_token"`
+	Plugins []string `toml:"plugins,omitempty"`
 }
 
 // Conf is the current configuration

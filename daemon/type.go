@@ -5,18 +5,21 @@ import (
 	"github.com/EbonJaeger/beluga/api/v1"
 	"github.com/EbonJaeger/beluga/config"
 	"github.com/EbonJaeger/beluga/handler"
+	"github.com/EbonJaeger/beluga/plugins"
 	"github.com/bwmarrin/discordgo"
 	"github.com/coreos/go-systemd/daemon"
 	"os"
 	"os/signal"
+	"plugin"
 	"syscall"
 )
 
 // Server is our Discord handler
 type Server struct {
-	api     *v1.Listener
-	discord *discordgo.Session
-	running bool
+	api           *v1.Listener
+	discord       *discordgo.Session
+	pluginManager *plugins.PluginManager
+	running       bool
 }
 
 // NewServer will create a new daemon
@@ -71,6 +74,19 @@ func (s *Server) Start() error {
 	s.running = true
 	s.killHandler()
 
+	// Load plugins
+	pm := plugins.NewManager()
+	pm.Plugins = make(map[string]plugin.Symbol)
+	if err := pm.LoadPlugins(); err != nil {
+		return err
+	}
+	s.pluginManager = pm
+
+	// Initilize handler funcs struct
+	var funcs = &handler.Funcs{
+		PluginManager: pm,
+	}
+
 	// Create our Discord client
 	d, err := discordgo.New("Bot " + config.Conf.Token)
 	if err != nil {
@@ -78,11 +94,12 @@ func (s *Server) Start() error {
 	}
 
 	// Connect our handlers
-	d.AddHandler(handler.OnReady)
-	d.AddHandler(handler.OnGuildCreate)
-	d.AddHandler(handler.OnMessageCreate)
+	d.AddHandler(funcs.OnReady)
+	d.AddHandler(funcs.OnGuildCreate)
+	d.AddHandler(funcs.OnMessageCreate)
 
 	s.discord = d
+	s.pluginManager.Session = d
 
 	// Open Discord websocket
 	if err := s.discord.Open(); err != nil {
