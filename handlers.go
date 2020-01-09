@@ -1,28 +1,20 @@
-package handler
+package main
 
 import (
-	log "github.com/DataDrake/waterlog"
-	"github.com/EbonJaeger/beluga/plugins"
 	"github.com/bwmarrin/discordgo"
 	"strings"
 )
 
-// Funcs holds our handler functions with a reference to the
-// Beluga plugin manager
-type Funcs struct {
-	PluginManager *plugins.PluginManager
-}
-
 // OnReady handles the "ready" event from Discord
-func (f *Funcs) OnReady(s *discordgo.Session, e *discordgo.Ready) {
+func OnReady(s *discordgo.Session, e *discordgo.Ready) {
 	s.UpdateStatus(0, "with bits and bobs")
 }
 
 // OnGuildCreate handles when we join a Discord guild
-func (f *Funcs) OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
+func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 	// Make sure the guild is available
 	if e.Guild.Unavailable {
-		log.Warnln("Attempted to join Guild '%s', but it was unavailable")
+		Log.Warnln("Attempted to join Guild '%s', but it was unavailable")
 		return
 	}
 
@@ -37,7 +29,7 @@ func (f *Funcs) OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 
 // OnMessageCreate handles when a regular message is sent in a channel
 // that we have access to
-func (f *Funcs) OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore messages sent by ourselves
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -55,8 +47,8 @@ func (f *Funcs) OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate
 	if strings.HasPrefix(parts[0], "!") {
 		// Get the command word
 		cmd := strings.Replace(parts[:1][0], "!", "", -1)
-		// Make a BelugaCommand
-		var bm = plugins.BelugaCommand{
+		// Make a Command
+		var bm = Command{
 			ChannelID:    m.Message.ChannelID,
 			Command:      cmd,
 			Message:      msg,
@@ -64,6 +56,6 @@ func (f *Funcs) OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate
 			Sender:       m.Message.Author,
 		}
 		// Send the command to all handlers
-		f.PluginManager.SendCommand(bm)
+		PluginManager.SendCommand(bm)
 	}
 }

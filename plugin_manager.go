@@ -1,13 +1,13 @@
-package plugins
+package main
 
 import (
-	log "github.com/DataDrake/waterlog"
-	"github.com/EbonJaeger/beluga/config"
-	"github.com/bwmarrin/discordgo"
 	"os"
 	"path/filepath"
 	"plugin"
 	"strings"
+
+	"github.com/EbonJaeger/beluga/config"
+	"github.com/bwmarrin/discordgo"
 )
 
 const (
@@ -16,28 +16,22 @@ const (
 	PluginsPath = "/usr/share/beluga/plugins"
 )
 
-// PluginManager is the Beluga plugin manager
-type PluginManager struct {
+// BelugaPluginManager is the Beluga plugin manager
+type BelugaPluginManager struct {
 	Plugins map[string]plugin.Symbol
-	Session *discordgo.Session
-}
-
-// NewManager creates a new plugin manager
-func NewManager() *PluginManager {
-	return &PluginManager{}
 }
 
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
-func (pm *PluginManager) IsEnabled(name string) bool {
+func (pm *BelugaPluginManager) IsEnabled(name string) bool {
 	return ArrayContains(config.Conf.Plugins, name)
 }
 
 // LoadPlugins attempts to load all found plugins
-func (pm *PluginManager) LoadPlugins() error {
+func (pm *BelugaPluginManager) LoadPlugins() error {
 	var pluginLoadErr error
 
-	log.Infoln("Looking for plugins to enable")
+	Log.Infoln("Looking for plugins to enable")
 
 	// Open plugin directory
 	if pluginDir, err := os.Open(PluginsPath); err == nil {
@@ -59,10 +53,10 @@ func (pm *PluginManager) LoadPlugins() error {
 						if _, added := pm.Plugins[pluginName]; !added {
 							// Open the file
 							if plugin, openErr := plugin.Open(filepath.Join(PluginsPath, fileName)); openErr == nil {
-								log.Infof("Checking '%s' for a message handler\n", fileName)
+								Log.Infof("Checking '%s' for a message handler\n", fileName)
 								// Look for message handler function
 								if handleFunc, lookupErr := plugin.Lookup("Handle"); lookupErr == nil {
-									log.Goodf("Added plugin '%s'\n", pluginName)
+									Log.Goodf("Added plugin '%s'\n", pluginName)
 									// Add the plugin
 									pm.Plugins[pluginName] = handleFunc
 								} else {
@@ -77,19 +71,20 @@ func (pm *PluginManager) LoadPlugins() error {
 					}
 				}
 			} else {
-				log.Infoln("No plugins found")
+				Log.Infoln("No plugins found")
 			}
 		} else {
 			pluginLoadErr = readErr
 		}
-
+	} else {
+		pluginLoadErr = err
 	}
 	return pluginLoadErr
 }
 
 // SendCommand sends a chat command to all registered handlers
-func (pm *PluginManager) SendCommand(cmd BelugaCommand) {
+func (pm *BelugaPluginManager) SendCommand(cmd Command) {
 	for _, handleFunc := range pm.Plugins {
-		handleFunc.(func(*discordgo.Session, BelugaCommand))(pm.Session, cmd)
+		handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
 	}
 }

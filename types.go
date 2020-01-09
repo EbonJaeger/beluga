@@ -1,12 +1,11 @@
-package plugins
+package main
 
 import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// BelugaCommand represents a chat command for a Beluga
-// plugin to handle
-type BelugaCommand struct {
+// Command represents a chat command for a Beluga plugin to handle
+type Command struct {
 	ChannelID    string
 	Command      string
 	Message      string

@@ -1,4 +1,4 @@
-package plugins
+package main
 
 // ArrayContains checks if a given element is in a string
 // array
