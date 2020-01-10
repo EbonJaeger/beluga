@@ -18,7 +18,7 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 		return
 	}
 
-	Log.Infof("Joined guild: %s\n", e.Guild.Name)
+	Log.Infof("Connected to the '%s' guild\n", e.Guild.Name)
 
 	// Join the correct channel
 	for _, channel := range e.Guild.Channels {
