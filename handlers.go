@@ -18,6 +18,8 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 		return
 	}
 
+	Log.Infof("Joined guild: %s\n", e.Guild.Name)
+
 	// Join the correct channel
 	for _, channel := range e.Guild.Channels {
 		if channel.ID == e.Guild.ID {
@@ -32,6 +34,11 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore messages sent by ourselves
 	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
+	// Ignore message sent from other bots (fun as that would be...)
+	if m.Author.Bot {
 		return
 	}
 
