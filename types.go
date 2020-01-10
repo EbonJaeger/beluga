@@ -1,4 +1,4 @@
-package main
+package beluga
 
 import (
 	"github.com/bwmarrin/discordgo"

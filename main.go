@@ -1,4 +1,4 @@
-package main
+package beluga
 
 import (
 	log2 "log"
@@ -23,7 +23,8 @@ var Log *waterlog.WaterLog
 // PluginManager is our plugin manager for third-party plugins
 var PluginManager *BelugaPluginManager
 
-func main() {
+// NewBeluga creates a new Beluga instance, and connects to Discord
+func NewBeluga() {
 	// Initialize logging
 	Log = waterlog.New(os.Stdout, "", log2.Ltime)
 	Log.SetLevel(level.Info)

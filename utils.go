@@ -1,4 +1,4 @@
-package main
+package beluga
 
 // ArrayContains checks if a given element is in a string
 // array

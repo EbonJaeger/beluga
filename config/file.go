@@ -7,6 +7,7 @@ import (
 type config struct {
 	Token   string   `toml:"discord_bot_token"`
 	Plugins []string `toml:"plugins,omitempty"`
+	Facts   []string `toml:"facts,omitempty"`
 }
 
 // Conf is the current configuration

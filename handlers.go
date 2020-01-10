@@ -1,4 +1,4 @@
-package main
+package beluga
 
 import (
 	"github.com/bwmarrin/discordgo"
@@ -54,12 +54,15 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(parts[0], "!") {
 		// Get the command word
 		cmd := strings.Replace(parts[:1][0], "!", "", -1)
+		// Trim trailing whitespace
+		msg = strings.TrimSpace(msg)
+		msgNoCmd := strings.TrimSpace(strings.TrimPrefix(msg, "!"+cmd))
 		// Make a Command
 		var bm = Command{
 			ChannelID:    m.Message.ChannelID,
 			Command:      strings.ToLower(cmd),
 			Message:      msg,
-			MessageNoCmd: strings.TrimPrefix(msg, "!"+cmd),
+			MessageNoCmd: msgNoCmd,
 			Sender:       m.Message.Author,
 		}
 		// Send the command to all handlers
