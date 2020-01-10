@@ -61,6 +61,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		var bm = Command{
 			ChannelID:    m.Message.ChannelID,
 			Command:      strings.ToLower(cmd),
+			GuildID:      m.Message.GuildID,
 			Message:      msg,
 			MessageNoCmd: msgNoCmd,
 			Sender:       m.Message.Author,

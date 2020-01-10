@@ -8,6 +8,7 @@ import (
 type Command struct {
 	ChannelID    string
 	Command      string
+	GuildID      string
 	Message      string
 	MessageNoCmd string
 	Sender       *discordgo.User
