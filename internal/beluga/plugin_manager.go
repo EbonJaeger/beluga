@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/EbonJaeger/beluga/config"
+	"github.com/EbonJaeger/beluga/pkg/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -24,7 +25,7 @@ type BelugaPluginManager struct {
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
 func (pm *BelugaPluginManager) IsEnabled(name string) bool {
-	return ArrayContains(config.Conf.Plugins, name)
+	return beluga.ArrayContains(config.Conf.Plugins, name)
 }
 
 // LoadPlugins attempts to load all found plugins
@@ -83,7 +84,7 @@ func (pm *BelugaPluginManager) LoadPlugins() error {
 }
 
 // SendCommand sends a chat command to all registered handlers
-func (pm *BelugaPluginManager) SendCommand(cmd Command) {
+func (pm *BelugaPluginManager) SendCommand(cmd beluga.Command) {
 	// Send to hunter2 plugin
 	if PluginManager.IsEnabled("Hunter2") {
 		HunterPlugin.Handle(Session, cmd)
@@ -91,6 +92,6 @@ func (pm *BelugaPluginManager) SendCommand(cmd Command) {
 
 	// Send to all third-party plugins
 	for _, handleFunc := range pm.Plugins {
-		handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
+		handleFunc.(func(*discordgo.Session, beluga.Command))(Session, cmd)
 	}
 }

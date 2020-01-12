@@ -1,8 +1,10 @@
 package beluga
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"strings"
+
+	"github.com/EbonJaeger/beluga/pkg/beluga"
+	"github.com/bwmarrin/discordgo"
 )
 
 // OnReady handles the "ready" event from Discord
@@ -58,7 +60,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		msg = strings.TrimSpace(msg)
 		msgNoCmd := strings.TrimSpace(strings.TrimPrefix(msg, "!"+cmd))
 		// Make a Command
-		var bm = Command{
+		var bm = beluga.Command{
 			ChannelID:    m.Message.ChannelID,
 			Command:      strings.ToLower(cmd),
 			GuildID:      m.Message.GuildID,
