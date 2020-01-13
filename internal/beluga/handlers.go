@@ -3,7 +3,7 @@ package beluga
 import (
 	"strings"
 
-	"github.com/EbonJaeger/beluga/pkg/beluga"
+	"github.com/EbonJaeger/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 

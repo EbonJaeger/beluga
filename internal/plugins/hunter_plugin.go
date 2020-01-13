@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/EbonJaeger/beluga/pkg/beluga"
+	"github.com/EbonJaeger/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 

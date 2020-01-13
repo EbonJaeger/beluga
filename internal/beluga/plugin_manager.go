@@ -6,9 +6,9 @@ import (
 	"plugin"
 	"strings"
 
+	"github.com/EbonJaeger/beluga"
 	"github.com/EbonJaeger/beluga/config"
 	"github.com/EbonJaeger/beluga/internal/plugins"
-	"github.com/EbonJaeger/beluga/pkg/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 
