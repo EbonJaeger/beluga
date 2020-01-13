@@ -5,9 +5,19 @@ import (
 )
 
 type config struct {
-	Token   string   `toml:"discord_bot_token"`
-	Plugins []string `toml:"plugins,omitempty"`
-	Facts   []string `toml:"facts,omitempty"`
+	Token    string `toml:"discord_bot_token"`
+	Plugins  pluginConf
+	SlapConf slapConf `toml:"slap-plugin"`
+	Facts    []string `toml:"facts,omitempty"`
+}
+
+type pluginConf struct {
+	Enabled []string `toml:"enabled-plugins"`
+}
+
+type slapConf struct {
+	SelfSlap     string   `toml:"self-slap"`
+	SlapMessages []string `toml:"slap-messages"`
 }
 
 // Conf is the current configuration

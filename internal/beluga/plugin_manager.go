@@ -26,7 +26,7 @@ type PluginManager struct {
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
 func (pm *PluginManager) IsEnabled(name string) bool {
-	return beluga.ArrayContains(config.Conf.Plugins, name)
+	return beluga.ArrayContains(config.Conf.Plugins.Enabled, name)
 }
 
 // LoadPlugins attempts to load all found plugins
@@ -88,7 +88,12 @@ func (pm *PluginManager) LoadPlugins() error {
 func (pm *PluginManager) SendCommand(cmd beluga.Command) {
 	// Send to hunter2 plugin
 	if pm.IsEnabled("Hunter2") {
-		plugins.HunterPlugin.Handle(Session, cmd)
+		plugins.Hunter.Handle(Session, cmd)
+	}
+
+	// Send to slap plugin
+	if pm.IsEnabled("Slap") {
+		plugins.Slapper.Handle(Session, cmd)
 	}
 
 	// Send to all third-party plugins

@@ -8,14 +8,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// BelugaHunterPlugin is our hunter2 plugin
-type BelugaHunterPlugin struct{}
+// HunterPlugin is our hunter2 plugin
+type HunterPlugin struct{}
 
-// HunterPlugin is our hunter2 plugin instance
-var HunterPlugin BelugaHunterPlugin
+// Hunter is our hunter2 plugin instance
+var Hunter HunterPlugin
 
 // Handle handles the "!hunter2" command
-func (p *BelugaHunterPlugin) Handle(s *discordgo.Session, c beluga.Command) {
+func (p *HunterPlugin) Handle(s *discordgo.Session, c beluga.Command) {
 	// Check that it's the right command
 	if c.Command != "hunter2" {
 		return
