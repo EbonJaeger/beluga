@@ -86,6 +86,9 @@ func (pm *PluginManager) LoadPlugins() error {
 
 // SendCommand sends a chat command to all registered handlers
 func (pm *PluginManager) SendCommand(cmd beluga.Command) {
+	// Send to help handler
+	plugins.Help.Handle(Session, cmd)
+
 	// Send to hunter2 plugin
 	if pm.IsEnabled("Hunter2") {
 		plugins.Hunter.Handle(Session, cmd)
