@@ -69,6 +69,6 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Sender:       m.Message.Author,
 		}
 		// Send the command to all handlers
-		PluginManager.SendCommand(bm)
+		Manager.SendCommand(bm)
 	}
 }

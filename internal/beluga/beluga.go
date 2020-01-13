@@ -20,8 +20,8 @@ var Session *discordgo.Session
 // Log is our WaterLog instance
 var Log *waterlog.WaterLog
 
-// PluginManager is our plugin manager for third-party plugins
-var PluginManager *BelugaPluginManager
+// Manager is our plugin manager for third-party plugins
+var Manager *PluginManager
 
 // NewBeluga creates a new Beluga instance, and connects to Discord
 func NewBeluga() {
@@ -31,10 +31,10 @@ func NewBeluga() {
 	Log.SetFormat(format.Min)
 
 	// Load plugins
-	PluginManager = &BelugaPluginManager{
+	Manager = &PluginManager{
 		Plugins: make(map[string]plugin.Symbol),
 	}
-	if err := PluginManager.LoadPlugins(); err != nil {
+	if err := Manager.LoadPlugins(); err != nil {
 		Log.Fatalf("Error while loading plugins: %s\n", err.Error())
 	}
 

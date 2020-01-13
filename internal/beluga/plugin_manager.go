@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/EbonJaeger/beluga/config"
+	"github.com/EbonJaeger/beluga/internal/plugins"
 	"github.com/EbonJaeger/beluga/pkg/beluga"
 	"github.com/bwmarrin/discordgo"
 )
@@ -17,19 +18,19 @@ const (
 	PluginsPath = "/usr/share/beluga/plugins"
 )
 
-// BelugaPluginManager is the Beluga plugin manager
-type BelugaPluginManager struct {
+// PluginManager is the Beluga plugin manager
+type PluginManager struct {
 	Plugins map[string]plugin.Symbol
 }
 
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
-func (pm *BelugaPluginManager) IsEnabled(name string) bool {
+func (pm *PluginManager) IsEnabled(name string) bool {
 	return beluga.ArrayContains(config.Conf.Plugins, name)
 }
 
 // LoadPlugins attempts to load all found plugins
-func (pm *BelugaPluginManager) LoadPlugins() error {
+func (pm *PluginManager) LoadPlugins() error {
 	var pluginLoadErr error
 
 	Log.Infoln("Looking for plugins to enable")
@@ -53,20 +54,20 @@ func (pm *BelugaPluginManager) LoadPlugins() error {
 						// Make sure we haven't already added this plugin
 						if _, added := pm.Plugins[pluginName]; !added {
 							// Open the file
-							if plugin, openErr := plugin.Open(filepath.Join(PluginsPath, fileName)); openErr == nil {
+							if plugin, err := plugin.Open(filepath.Join(PluginsPath, fileName)); err == nil {
 								Log.Infof("Checking '%s' for a message handler\n", fileName)
 								// Look for message handler function
-								if handleFunc, lookupErr := plugin.Lookup("Handle"); lookupErr == nil {
+								if handleFunc, err := plugin.Lookup("Handle"); err == nil {
 									Log.Goodf("Added plugin '%s'\n", pluginName)
 									// Add the plugin
 									pm.Plugins[pluginName] = handleFunc
 								} else {
-									pluginLoadErr = lookupErr
-									break
+									Log.Warnf("Error while loading plugin '%s': %s\n", pluginName, err.Error())
+									continue
 								}
 							} else {
-								pluginLoadErr = openErr
-								break
+								Log.Warnf("Error while loading plugin '%s': %s\n", pluginName, err.Error())
+								continue
 							}
 						}
 					}
@@ -84,10 +85,10 @@ func (pm *BelugaPluginManager) LoadPlugins() error {
 }
 
 // SendCommand sends a chat command to all registered handlers
-func (pm *BelugaPluginManager) SendCommand(cmd beluga.Command) {
+func (pm *PluginManager) SendCommand(cmd beluga.Command) {
 	// Send to hunter2 plugin
-	if PluginManager.IsEnabled("Hunter2") {
-		HunterPlugin.Handle(Session, cmd)
+	if pm.IsEnabled("Hunter2") {
+		plugins.HunterPlugin.Handle(Session, cmd)
 	}
 
 	// Send to all third-party plugins
