@@ -1,5 +1,5 @@
-name: Go
-on: [push]
+name: Go CI
+on: [push, pull_request]
 jobs:
 
   build:
@@ -14,7 +14,7 @@ jobs:
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Get dependencies
       run: |
@@ -24,8 +24,42 @@ jobs:
             dep ensure
         fi
 
-    - name: GolangCI-Lint Action
-      uses: actions-contrib/golangci-lint@v0.1.0
-
     - name: Build
       run: go build -v -ldflags "-s -w" --tags "linux" ./cmd/beluga
+  
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      
+      - name: Lint Action
+        uses: samuelmeuli/lint-action@v1.0.0
+        with:
+          gofmt: true
+          gofmt_args: -x
+    
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      
+      - name: Lint Action
+        uses: samuelmeuli/lint-action@v1.0.0
+        with:
+          golint: true
