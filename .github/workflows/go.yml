@@ -40,9 +40,10 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
       
-      - name: Lint Action
+      - name: Format Action
         uses: samuelmeuli/lint-action@v1.0.0
         with:
+          github_token: ${{ secrets.github_token }}
           gofmt: true
           gofmt_args: -x
     
@@ -62,4 +63,5 @@ jobs:
       - name: Lint Action
         uses: samuelmeuli/lint-action@v1.0.0
         with:
+          github_token: ${{ secrets.github_token }}
           golint: true
