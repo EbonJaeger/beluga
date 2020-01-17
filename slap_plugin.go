@@ -1,12 +1,10 @@
-package plugins
+package beluga
 
 import (
 	"math/rand"
 	"strings"
 	"time"
 
-	"github.com/EbonJaeger/beluga"
-	"github.com/EbonJaeger/beluga/config"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -17,7 +15,7 @@ type SlapPlugin struct{}
 var Slapper SlapPlugin
 
 // Handle implements the '!slap' command
-func (p *SlapPlugin) Handle(s *discordgo.Session, c beluga.Command) {
+func (p *SlapPlugin) Handle(s *discordgo.Session, c Command) {
 	// Ignore other commands
 	if c.Command != "slap" {
 		return
@@ -28,12 +26,12 @@ func (p *SlapPlugin) Handle(s *discordgo.Session, c beluga.Command) {
 		args := strings.Split(c.MessageNoCmd, " ")
 		// Check args length
 		if len(args) == 1 {
-			// Get target user's ID
+			// Get target user's name
 			name := args[0]
 			// Get the Guild
 			g, _ := s.Guild(c.GuildID)
 			// Find the target user
-			target := parseTarget(s, g, name)
+			target := GetUserFromName(s, g, name)
 			// Make sure we have a valid target
 			if target == nil {
 				s.ChannelMessageSend(c.ChannelID, "You must be halucinating. There is noone here by that name.")
@@ -42,7 +40,7 @@ func (p *SlapPlugin) Handle(s *discordgo.Session, c beluga.Command) {
 			var resp string
 			// Check for self-harm
 			if target.Username == c.Sender.Username {
-				s.ChannelMessageSend(c.ChannelID, config.Conf.SlapConf.SelfSlap)
+				s.ChannelMessageSend(c.ChannelID, Conf.SlapConf.SelfSlap)
 				return
 			}
 			// Check for slapping Beluga bot
@@ -52,33 +50,13 @@ func (p *SlapPlugin) Handle(s *discordgo.Session, c beluga.Command) {
 			// Seed random
 			rand.Seed(time.Now().Unix())
 			// Get random number
-			randNum := rand.Intn(len(config.Conf.SlapConf.SlapMessages))
+			randNum := rand.Intn(len(Conf.SlapConf.SlapMessages))
 			// Get our slap message
-			resp = "*" + config.Conf.SlapConf.SlapMessages[randNum] + "*"
+			resp = "*" + Conf.SlapConf.SlapMessages[randNum] + "*"
 			// Put in the target's @-mention
 			resp = strings.Replace(resp, "$USER", target.Mention(), -1)
 			// Send the response
 			s.ChannelMessageSend(c.ChannelID, resp)
 		}
 	}
-}
-
-func parseTarget(s *discordgo.Session, g *discordgo.Guild, t string) *discordgo.User {
-	var target *discordgo.User
-	// Check if it's a mention
-	if strings.HasPrefix(t, "<@!") {
-		id := strings.TrimPrefix(t, "<@!")
-		id = strings.TrimSuffix(id, ">")
-		target, _ = s.User(id)
-	} else {
-		// Check if it's a partial name
-		for _, u := range g.Members {
-			if strings.Contains(strings.ToLower(u.User.Username), strings.ToLower(t)) {
-				target = u.User
-				break
-			}
-		}
-	}
-
-	return target
 }

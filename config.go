@@ -1,7 +1,8 @@
-package config
+package beluga
 
 import (
 	"github.com/BurntSushi/toml"
+	"path/filepath"
 )
 
 type config struct {
@@ -24,9 +25,9 @@ type slapConf struct {
 var Conf config
 
 // Load will load the config
-func Load() error {
+func LoadConfig() error {
 	// Get our config file
-	path := "/etc/beluga/beluga.conf"
+	path := filepath.Join(ConfigPath, "beluga.conf")
 
 	// Parse file
 	Conf = config{}
@@ -36,10 +37,4 @@ func Load() error {
 	}
 
 	return nil
-}
-
-func init() {
-	if err := Load(); err != nil {
-		panic(err.Error())
-	}
 }

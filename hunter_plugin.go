@@ -1,10 +1,9 @@
-package plugins
+package beluga
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/EbonJaeger/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -15,7 +14,7 @@ type HunterPlugin struct{}
 var Hunter HunterPlugin
 
 // Handle handles the "!hunter2" command
-func (p *HunterPlugin) Handle(s *discordgo.Session, c beluga.Command) {
+func (p *HunterPlugin) Handle(s *discordgo.Session, c Command) {
 	// Check that it's the right command
 	if c.Command != "hunter2" {
 		return

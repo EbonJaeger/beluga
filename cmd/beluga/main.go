@@ -1,6 +1,6 @@
 package main
 
-import "github.com/EbonJaeger/beluga/internal/beluga"
+import "github.com/EbonJaeger/beluga"
 
 func main() {
 	beluga.NewBeluga()

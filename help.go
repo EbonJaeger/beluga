@@ -1,11 +1,9 @@
-package plugins
+package beluga
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/EbonJaeger/beluga"
-	"github.com/EbonJaeger/beluga/config"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,7 +12,7 @@ type helpPlugin struct{}
 // Help is our help responder
 var Help helpPlugin
 
-func (h *helpPlugin) Handle(s *discordgo.Session, c beluga.Command) {
+func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 	// Ignore other commands
 	if c.Command != "help" {
 		return
@@ -24,10 +22,10 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c beluga.Command) {
 	var b strings.Builder
 	b.WriteString(" **Commands for Beluga Bot:**\n")
 	b.WriteString("> `!help` - Show this help message\n")
-	if beluga.ArrayContains(config.Conf.Plugins.Enabled, "Hunter2") {
+	if ArrayContains(Conf.Plugins.Enabled, "Hunter2") {
 		b.WriteString("> `!hunter2` - Something secret might happen if you use this command...\n")
 	}
-	if beluga.ArrayContains(config.Conf.Plugins.Enabled, "Slap") {
+	if ArrayContains(Conf.Plugins.Enabled, "Slap") {
 		b.WriteString("> `!slap <user>` - Creatively slap a user. Name can be a mention, or part of their username\n")
 	}
 

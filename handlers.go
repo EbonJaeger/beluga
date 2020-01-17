@@ -3,7 +3,6 @@ package beluga
 import (
 	"strings"
 
-	"github.com/EbonJaeger/beluga"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -54,13 +53,17 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	parts := strings.Split(msg, " ")
 	// Check if the message starts with a command prefix
 	if strings.HasPrefix(parts[0], "!") {
+		// Check if the user is currently blacklisted
+		if ArrayContains(Blacklist.Users, m.Author.ID) {
+			return
+		}
 		// Get the command word
 		cmd := strings.Replace(parts[:1][0], "!", "", -1)
 		// Trim trailing whitespace
 		msg = strings.TrimSpace(msg)
 		msgNoCmd := strings.TrimSpace(strings.TrimPrefix(msg, "!"+cmd))
 		// Make a Command
-		var bm = beluga.Command{
+		var bm = Command{
 			ChannelID:    m.Message.ChannelID,
 			Command:      strings.ToLower(cmd),
 			GuildID:      m.Message.GuildID,
