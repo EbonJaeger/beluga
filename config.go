@@ -10,14 +10,15 @@ type config struct {
 	// Token is the Discord bot token to use to connect to Discord
 	Token string `toml:"discord_bot_token"`
 	// Guilds contains the guild-specific configurations for each guild
-	Guilds map[string]GuildConfig
+	Guilds map[string]*GuildConfig
 	Facts  []string `toml:"facts,omitempty"`
 }
 
 // GuildConfig is a guild-specific configuration
 type GuildConfig struct {
-	EnabledPlugins []string
-	SlapConfig     SlapPluginConfig
+	EnabledPlugins  []string
+	CustomResponses map[string]string
+	SlapConfig      SlapPluginConfig
 }
 
 // SlapPluginConfig holds the configuration options for the slap plugin.
@@ -45,7 +46,7 @@ func LoadConfig() error {
 	}
 	// Validate Guild configuration section
 	if Conf.Guilds == nil {
-		Conf.Guilds = make(map[string]GuildConfig)
+		Conf.Guilds = make(map[string]*GuildConfig)
 	}
 
 	return nil
@@ -56,7 +57,8 @@ func LoadConfig() error {
 func SetGuildDefaults(guildID string) {
 	// Create a fresh Guild config
 	g := GuildConfig{
-		EnabledPlugins: []string{"Hunter2", "Slap"},
+		EnabledPlugins:  []string{"Hunter2", "Slap"},
+		CustomResponses: make(map[string]string),
 		SlapConfig: SlapPluginConfig{
 			SelfSlap: "I shall not listen to the demands of mere humans, for I am the underwater whale master.",
 			SlapMessages: []string{
@@ -78,7 +80,7 @@ func SetGuildDefaults(guildID string) {
 		},
 	}
 	// Add the new guild to the rest of the config
-	Conf.Guilds[guildID] = g
+	Conf.Guilds[guildID] = &g
 	// Save it to the disk
 	SaveConfigToFile("beluga.conf", Conf)
 }

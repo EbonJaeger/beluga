@@ -61,7 +61,12 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 			}
 			// Add user to blacklist
 			Blacklist.Users = append(Blacklist.Users, user.ID)
-			SaveConfigToFile("blacklist.toml", Blacklist)
+			if err := SaveConfigToFile("blacklist.toml", Blacklist); err != nil {
+				Log.Errorf("Error while saving blacklist file: %s\n", err.Error())
+				s.ChannelMessageSend(c.ChannelID, "An error occurred while saving the blacklist. :frowning:")
+			} else {
+				s.ChannelMessageSend(c.ChannelID, "Added the user to the blacklist!")
+			}
 		}
 	}
 }
@@ -95,7 +100,12 @@ func removeBlacklistedUser(s *discordgo.Session, c Command) {
 			}
 			// Remove user from blacklist
 			Blacklist.Users = RemoveFromStringArray(Blacklist.Users, user.ID)
-			SaveConfigToFile("blacklist.toml", Blacklist)
+			if err := SaveConfigToFile("blacklist.toml", Blacklist); err != nil {
+				Log.Errorf("Error while saving blacklist file: %s\n", err.Error())
+				s.ChannelMessageSend(c.ChannelID, "An error occurred while saving the blacklist. :frowning:")
+			} else {
+				s.ChannelMessageSend(c.ChannelID, "Removed the user to the blacklist! :smiley:")
+			}
 		}
 	}
 }

@@ -32,6 +32,7 @@ func (pm *PluginManager) LoadPlugins() error {
 	pm.Plugins["Admin"] = BelugaAdmin.Handle
 	pm.Plugins["Help"] = Help.Handle
 	pm.Plugins["Hunter2"] = Hunter.Handle
+	pm.Plugins["Commands"] = Commands.Handle
 	pm.Plugins["Slap"] = Slapper.Handle
 
 	Log.Infoln("Looking for third-party plugins to enable")

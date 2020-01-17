@@ -123,7 +123,7 @@ func RemoveFromStringArray(arr []string, item string) []string {
 
 // SaveConfigToFile saves the given data to the given file name in the local
 // config directory
-func SaveConfigToFile(name string, data interface{}) {
+func SaveConfigToFile(name string, data interface{}) error {
 	var (
 		buffer  bytes.Buffer
 		saveErr error
@@ -137,8 +137,5 @@ func SaveConfigToFile(name string, data interface{}) {
 		// Write to the blacklist file
 		saveErr = ioutil.WriteFile(path, buffer.Bytes(), 0644)
 	}
-	// Log if there's an error
-	if saveErr != nil {
-		Log.Errorf("Error saving to file: %s\n", saveErr.Error())
-	}
+	return saveErr
 }
