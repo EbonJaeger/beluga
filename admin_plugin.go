@@ -29,7 +29,7 @@ func (p *AdminPlugin) Handle(s *discordgo.Session, c Command) {
 
 func addBlacklistedUser(s *discordgo.Session, c Command) {
 	// Check if the sender is an administrator
-	if hasPerm, _ := MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm); !hasPerm {
+	if !MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
 		s.ChannelMessageSend(c.ChannelID, "You don't have permission to perform that command! Get outa here! :angry:")
 		return
 	}
@@ -50,8 +50,7 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 				return
 			}
 			// Check if the user is an admin
-			hasPerm, _ := MemberHasPermission(s, c.GuildID, user.ID, AdministratorPerm)
-			if hasPerm {
+			if MemberHasPermission(s, c.GuildID, user.ID, AdministratorPerm) {
 				s.ChannelMessageSend(c.ChannelID, "I cant blacklist that user, are you kidding? :frowning:")
 				return
 			}
@@ -69,7 +68,7 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 
 func removeBlacklistedUser(s *discordgo.Session, c Command) {
 	// Check if the sender is an administrator
-	if hasPerm, _ := MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm); !hasPerm {
+	if MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
 		s.ChannelMessageSend(c.ChannelID, "You don't have permission to perform that command! Get outa here! :angry:")
 		return
 	}

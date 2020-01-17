@@ -54,12 +54,12 @@ func GetUserFromName(s *discordgo.Session, g *discordgo.Guild, t string) *discor
 }
 
 // MemberHasPermission checks if a member of a guild has the desired permission
-func MemberHasPermission(s *discordgo.Session, guildID string, userID string, perm int) (bool, error) {
+func MemberHasPermission(s *discordgo.Session, guildID string, userID string, perm int) bool {
 	// Get the guild member
 	m, err := s.State.Member(guildID, userID)
 	if err != nil {
 		if m, err = s.GuildMember(guildID, userID); err != nil {
-			return false, err
+			return false
 		}
 	}
 	// Iterate through all roles to check permissions
@@ -68,14 +68,14 @@ func MemberHasPermission(s *discordgo.Session, guildID string, userID string, pe
 		role, err := s.State.Role(guildID, roleID)
 		// Make sure the role exists
 		if err != nil {
-			return false, err
+			return false
 		}
 		// Check if the role's permissions contains the sought after permission
 		if role.Permissions&perm != 0 {
-			return true, nil
+			return true
 		}
 	}
-	return false, nil
+	return false
 }
 
 // RemoveFromStringArray removes an item from a string array
