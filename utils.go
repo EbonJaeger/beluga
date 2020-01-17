@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -31,6 +32,29 @@ func ArrayContains(arr []string, element string) bool {
 	}
 
 	return found
+}
+
+// CreateFileIfNotExists creates a new empty file at the given path it the file
+// does not yet exist
+func CreateFileIfNotExists(path string) error {
+	// Check if the file exists
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			// Create the file if it doesn't exist
+			f, createErr := os.Create(path)
+			if createErr != nil {
+				return createErr
+			}
+			// Set the file permissions
+			if chmodErr := f.Chmod(0644); chmodErr != nil {
+				return chmodErr
+			}
+		} else {
+			// Other error
+			return err
+		}
+	}
+	return nil
 }
 
 // GetUserFromName gets the Discord user from a mention or username. The username

@@ -1,8 +1,9 @@
 package beluga
 
 import (
-	"github.com/BurntSushi/toml"
 	"path/filepath"
+
+	"github.com/BurntSushi/toml"
 )
 
 type config struct {
@@ -33,7 +34,9 @@ var Conf config
 func LoadConfig() error {
 	// Get our config file
 	path := filepath.Join(ConfigPath, "beluga.conf")
-
+	if err := CreateFileIfNotExists(path); err != nil {
+		return err
+	}
 	// Parse file
 	Conf = config{}
 	_, err := toml.DecodeFile(path, &Conf)
