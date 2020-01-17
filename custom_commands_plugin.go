@@ -36,6 +36,8 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 					s.ChannelMessageSend(c.ChannelID, fmt.Sprintf("Command '%s' added or updated successfully! :smiley:", cmd))
 				}
 			}
+		} else {
+			s.ChannelMessageSend(c.ChannelID, "You don't have permission to perform that command! Get outa here! :angry:")
 		}
 		break
 	case "rmcommand":
@@ -55,6 +57,8 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 					}
 				}
 			}
+		} else {
+			s.ChannelMessageSend(c.ChannelID, "You don't have permission to perform that command! Get outa here! :angry:")
 		}
 		break
 	default:
