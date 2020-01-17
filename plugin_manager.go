@@ -28,10 +28,14 @@ func (pm *PluginManager) IsEnabled(guild string, name string) bool {
 
 // LoadPlugins attempts to load all found plugins
 func (pm *PluginManager) LoadPlugins() error {
+	// Enable our first-party plugins first
+	pm.Plugins["Admin"] = BelugaAdmin.Handle
+	pm.Plugins["Help"] = Help.Handle
+	pm.Plugins["Hunter2"] = Hunter.Handle
+	pm.Plugins["Slap"] = Slapper.Handle
+
+	Log.Infoln("Looking for third-party plugins to enable")
 	var pluginLoadErr error
-
-	Log.Infoln("Looking for plugins to enable")
-
 	// Open plugin directory
 	if pluginDir, err := os.Open(PluginsPath); err == nil {
 		defer pluginDir.Close()
@@ -70,7 +74,7 @@ func (pm *PluginManager) LoadPlugins() error {
 					}
 				}
 			} else {
-				Log.Infoln("No plugins found")
+				Log.Infoln("No third-party plugins found")
 			}
 		} else {
 			pluginLoadErr = readErr
@@ -83,24 +87,10 @@ func (pm *PluginManager) LoadPlugins() error {
 
 // SendCommand sends a chat command to all registered handlers
 func (pm *PluginManager) SendCommand(cmd Command) {
-	// Send to help handler
-	Help.Handle(Session, cmd)
-
-	// Send to admin handler
-	BelugaAdmin.Handle(Session, cmd)
-
-	// Send to hunter2 plugin
-	if pm.IsEnabled(cmd.GuildID, "Hunter2") {
-		Hunter.Handle(Session, cmd)
-	}
-
-	// Send to slap plugin
-	if pm.IsEnabled(cmd.GuildID, "Slap") {
-		Slapper.Handle(Session, cmd)
-	}
-
-	// Send to all third-party plugins
-	for _, handleFunc := range pm.Plugins {
-		handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
+	// Send to all plugins
+	for name, handleFunc := range pm.Plugins {
+		if pm.IsEnabled(cmd.GuildID, name) {
+			go handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
+		}
 	}
 }
