@@ -22,10 +22,10 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 	var b strings.Builder
 	b.WriteString(" **Commands for Beluga Bot:**\n")
 	b.WriteString("> `!help` - Show this help message\n")
-	if ArrayContains(Conf.Plugins.Enabled, "Hunter2") {
+	if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Hunter2") {
 		b.WriteString("> `!hunter2` - Something secret might happen if you use this command...\n")
 	}
-	if ArrayContains(Conf.Plugins.Enabled, "Slap") {
+	if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Slap") {
 		b.WriteString("> `!slap <user>` - Creatively slap a user. Name can be a mention, or part of their username\n")
 	}
 	if MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {

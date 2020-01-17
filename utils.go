@@ -1,8 +1,13 @@
 package beluga
 
 import (
+	"bufio"
+	"bytes"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -90,4 +95,26 @@ func RemoveFromStringArray(arr []string, item string) []string {
 		}
 	}
 	return newArr
+}
+
+// SaveConfigToFile saves the given data to the given file name in the local
+// config directory
+func SaveConfigToFile(name string, data interface{}) {
+	var (
+		buffer  bytes.Buffer
+		saveErr error
+	)
+	path := filepath.Join(ConfigPath, name)
+	// Create our buffer and encoder
+	writer := bufio.NewWriter(&buffer)
+	encoder := toml.NewEncoder(writer)
+	// Encode the struct as toml
+	if saveErr = encoder.Encode(data); saveErr == nil {
+		// Write to the blacklist file
+		saveErr = ioutil.WriteFile(path, buffer.Bytes(), 0644)
+	}
+	// Log if there's an error
+	if saveErr != nil {
+		Log.Errorf("Error saving to file: %s\n", saveErr.Error())
+	}
 }

@@ -61,7 +61,7 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 			}
 			// Add user to blacklist
 			Blacklist.Users = append(Blacklist.Users, user.ID)
-			SaveBlacklist()
+			SaveConfigToFile("blacklist.toml", Blacklist)
 		}
 	}
 }
@@ -95,7 +95,7 @@ func removeBlacklistedUser(s *discordgo.Session, c Command) {
 			}
 			// Remove user from blacklist
 			Blacklist.Users = RemoveFromStringArray(Blacklist.Users, user.ID)
-			SaveBlacklist()
+			SaveConfigToFile("blacklist.toml", Blacklist)
 		}
 	}
 }

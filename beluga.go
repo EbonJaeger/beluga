@@ -64,7 +64,7 @@ func NewBeluga() {
 	if err := LoadConfig(); err != nil {
 		Log.Fatalf("Error while loading config: %s\n", err.Error())
 	}
-	// Loud our blacklist
+	// Load our blacklist
 	var readErr error
 	Blacklist, readErr = ReadBlacklist()
 	if readErr != nil {

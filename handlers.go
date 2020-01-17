@@ -15,8 +15,15 @@ func OnReady(s *discordgo.Session, e *discordgo.Ready) {
 func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 	// Make sure the guild is available
 	if e.Guild.Unavailable {
-		Log.Warnln("Attempted to join Guild '%s', but it was unavailable")
+		Log.Warnf("Attempted to join Guild '%s', but it was unavailable\n", e.Guild.Name)
 		return
+	}
+
+	// Check if this Guild already has a configuration
+	if _, exists := Conf.Guilds[e.Guild.ID]; !exists {
+		// Set defaults for this guild if no configuration is found
+		Log.Infof("Creating default configuration for Guild '%s'\n", e.Guild.Name)
+		SetGuildDefaults(e.Guild.ID)
 	}
 
 	Log.Infof("Connected to the '%s' guild\n", e.Guild.Name)

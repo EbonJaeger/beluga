@@ -22,8 +22,8 @@ type PluginManager struct {
 
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
-func (pm *PluginManager) IsEnabled(name string) bool {
-	return ArrayContains(Conf.Plugins.Enabled, name)
+func (pm *PluginManager) IsEnabled(guild string, name string) bool {
+	return ArrayContains(Conf.Guilds[guild].EnabledPlugins, name)
 }
 
 // LoadPlugins attempts to load all found plugins
@@ -90,12 +90,12 @@ func (pm *PluginManager) SendCommand(cmd Command) {
 	BelugaAdmin.Handle(Session, cmd)
 
 	// Send to hunter2 plugin
-	if pm.IsEnabled("Hunter2") {
+	if pm.IsEnabled(cmd.GuildID, "Hunter2") {
 		Hunter.Handle(Session, cmd)
 	}
 
 	// Send to slap plugin
-	if pm.IsEnabled("Slap") {
+	if pm.IsEnabled(cmd.GuildID, "Slap") {
 		Slapper.Handle(Session, cmd)
 	}
 

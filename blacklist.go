@@ -1,9 +1,6 @@
 package beluga
 
 import (
-	"bufio"
-	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -38,25 +35,4 @@ func ReadBlacklist() (UserBlacklist, error) {
 	}
 
 	return blacklist, nil
-}
-
-// SaveBlacklist saves the current user blacklist to disk
-func SaveBlacklist() {
-	var (
-		buffer  bytes.Buffer
-		saveErr error
-	)
-	path := filepath.Join(ConfigPath, "blacklist.toml")
-	// Create our buffer and encoder
-	writer := bufio.NewWriter(&buffer)
-	encoder := toml.NewEncoder(writer)
-	// Encode the struct as toml
-	if saveErr = encoder.Encode(Blacklist); saveErr == nil {
-		// Write to the blacklist file
-		saveErr = ioutil.WriteFile(path, buffer.Bytes(), 0644)
-	}
-	// Log if there's an error
-	if saveErr != nil {
-		Log.Errorf("Error to save blacklist to file: %s\n", saveErr.Error())
-	}
 }
