@@ -24,7 +24,7 @@ type slapConf struct {
 // Conf is the current configuration
 var Conf config
 
-// Load will load the config
+// LoadConfig will load the config
 func LoadConfig() error {
 	// Get our config file
 	path := filepath.Join(ConfigPath, "beluga.conf")

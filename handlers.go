@@ -8,7 +8,7 @@ import (
 
 // OnReady handles the "ready" event from Discord
 func OnReady(s *discordgo.Session, e *discordgo.Ready) {
-	s.UpdateStatus(0, "with bits and bobs")
+	s.UpdateStatus(0, "!help to list commands")
 }
 
 // OnGuildCreate handles when we join a Discord guild
