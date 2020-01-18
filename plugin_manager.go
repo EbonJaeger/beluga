@@ -90,7 +90,7 @@ func (pm *PluginManager) LoadPlugins() error {
 func (pm *PluginManager) SendCommand(cmd Command) {
 	// Send to all plugins
 	for name, handleFunc := range pm.Plugins {
-		if pm.IsEnabled(cmd.GuildID, name) {
+		if pm.IsEnabled(cmd.GuildID, name) || name == "Help" {
 			go handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
 		}
 	}

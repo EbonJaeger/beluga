@@ -32,6 +32,10 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 		b.WriteString("**Administrator Commands:**\n")
 		b.WriteString("> `!blacklist <user>` - Add a user to the blacklist so they can't run any bot commands\n")
 		b.WriteString("> `!rmblacklist <user>` - Remove a user from the blacklist\n")
+		if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Commands") {
+			b.WriteString("> `!addcommand <command> <response>` - Add a custom command that the bot will respond to\n")
+			b.WriteString("> `!rmcommand <command>` - Remove a custom command\n")
+		}
 	}
 
 	// Create a DM channel
