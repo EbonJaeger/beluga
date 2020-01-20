@@ -26,6 +26,12 @@ func (pm *PluginManager) IsEnabled(guild string, name string) bool {
 	return ArrayContains(Conf.Guilds[guild].EnabledPlugins, name)
 }
 
+// IsLoaded will check if the given plugin name has an entry in our
+// plugins map.
+func (pm *PluginManager) IsLoaded(name string) bool {
+	return pm.Plugins[name] != nil
+}
+
 // LoadPlugins attempts to load all found plugins
 func (pm *PluginManager) LoadPlugins() error {
 	// Enable our first-party plugins first
@@ -90,7 +96,9 @@ func (pm *PluginManager) LoadPlugins() error {
 func (pm *PluginManager) SendCommand(cmd Command) {
 	// Send to all plugins
 	for name, handleFunc := range pm.Plugins {
-		if pm.IsEnabled(cmd.GuildID, name) || name == "Help" {
+		// Don't send the command if the plugin isn't enabled on the relevent guild.
+		// The Admin and Help commands should always be handled, however.
+		if pm.IsEnabled(cmd.GuildID, name) || name == "Admin" || name == "Help" {
 			go handleFunc.(func(*discordgo.Session, Command))(Session, cmd)
 		}
 	}
