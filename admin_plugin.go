@@ -61,12 +61,12 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 				return
 			}
 			// Check if user is already blacklisted
-			if ArrayContains(Blacklist.Users, user.ID) {
+			if ArrayContains(Blacklist.Guilds[guild.ID], user.ID) {
 				s.ChannelMessageSend(c.ChannelID, "That user is already blacklisted!")
 				return
 			}
 			// Add user to blacklist
-			Blacklist.Users = append(Blacklist.Users, user.ID)
+			Blacklist.Guilds[guild.ID] = append(Blacklist.Guilds[guild.ID], user.ID)
 			if err := SaveConfigToFile("blacklist.toml", Blacklist); err != nil {
 				Log.Errorf("Error while saving blacklist file: %s\n", err.Error())
 				s.ChannelMessageSend(c.ChannelID, "An error occurred while saving the blacklist. :frowning:")
@@ -155,12 +155,12 @@ func removeBlacklistedUser(s *discordgo.Session, c Command) {
 				return
 			}
 			// Check if user is actually blacklisted
-			if !ArrayContains(Blacklist.Users, user.ID) {
+			if !ArrayContains(Blacklist.Guilds[guild.ID], user.ID) {
 				s.ChannelMessageSend(c.ChannelID, "That user isn't blacklisted!")
 				return
 			}
 			// Remove user from blacklist
-			Blacklist.Users = RemoveFromStringArray(Blacklist.Users, user.ID)
+			Blacklist.Guilds[guild.ID] = RemoveFromStringArray(Blacklist.Guilds[guild.ID], user.ID)
 			if err := SaveConfigToFile("blacklist.toml", Blacklist); err != nil {
 				Log.Errorf("Error while saving blacklist file: %s\n", err.Error())
 				s.ChannelMessageSend(c.ChannelID, "An error occurred while saving the blacklist. :frowning:")

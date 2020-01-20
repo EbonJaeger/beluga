@@ -22,6 +22,5 @@ type CommandPlugin interface {
 
 // UserBlacklist contains the user ID's that are blacklisted from using commands
 type UserBlacklist struct {
-	// Users is a list of blacklisted user ID's
-	Users []string
+	Guilds map[string][]string
 }

@@ -18,6 +18,10 @@ func ReadBlacklist() (UserBlacklist, error) {
 	if err != nil {
 		return blacklist, err
 	}
+	// Make sure we have a proper guilds section
+	if blacklist.Guilds == nil {
+		blacklist.Guilds = make(map[string][]string)
+	}
 
 	return blacklist, nil
 }

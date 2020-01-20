@@ -61,7 +61,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Check if the message starts with a command prefix
 	if strings.HasPrefix(parts[0], "!") {
 		// Check if the user is currently blacklisted
-		if ArrayContains(Blacklist.Users, m.Author.ID) {
+		if ArrayContains(Blacklist.Guilds[m.Message.GuildID], m.Author.ID) {
 			return
 		}
 		// Get the command word
