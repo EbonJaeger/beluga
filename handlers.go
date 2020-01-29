@@ -6,6 +6,18 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+func isDirectMessage(s *discordgo.Session, channelID string) bool {
+	// Get the channel
+	c, err := s.State.Channel(channelID)
+	if err != nil {
+		if c, err = s.Channel(channelID); err != nil {
+			return false
+		}
+	}
+	// Check the channel type
+	return c.Type == discordgo.ChannelTypeDM || c.Type == discordgo.ChannelTypeGroupDM
+}
+
 // OnReady handles the "ready" event from Discord
 func OnReady(s *discordgo.Session, e *discordgo.Ready) {
 	s.UpdateStatus(0, "!help to list commands")
@@ -40,6 +52,11 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 // OnMessageCreate handles when a regular message is sent in a channel
 // that we have access to
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Ignore messages from DM's
+	if isDirectMessage(s, m.ChannelID) {
+		return
+	}
+
 	// Ignore messages sent by ourselves
 	if m.Author.ID == s.State.User.ID {
 		return
