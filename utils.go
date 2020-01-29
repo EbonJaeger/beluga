@@ -107,7 +107,7 @@ func MemberHasPermission(s *discordgo.Session, guildID string, userID string, pe
 	return false
 }
 
-// RemoveFromStringArray removes an item from a string array
+// RemoveFromStringArray removes a single item from a string array
 func RemoveFromStringArray(arr []string, item string) []string {
 	// Create a new array
 	newArr := []string{}
@@ -115,6 +115,28 @@ func RemoveFromStringArray(arr []string, item string) []string {
 	for _, e := range arr {
 		// Add to new list if it doesn't match
 		if e != item {
+			newArr = append(newArr, e)
+		}
+	}
+	return newArr
+}
+
+// RemoveMultipleFromArray removes anything that's in the second array from the first array
+func RemoveMultipleFromArray(arr, toRemove []string) []string {
+	// Create a new Array
+	newArr := []string{}
+	// Iterate over the given list
+	for _, e := range arr {
+		found := false
+		// Iterate over the second list
+		for _, remove := range toRemove {
+			// Check if we have to remove this item
+			if e == remove {
+				found = true
+			}
+		}
+		// Add to the new array if we're not removing it
+		if !found {
 			newArr = append(newArr, e)
 		}
 	}

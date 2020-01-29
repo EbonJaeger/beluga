@@ -1,6 +1,7 @@
 package beluga
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -29,6 +30,9 @@ func (p *AdminPlugin) Handle(s *discordgo.Session, c Command) {
 		break
 	case "enableplugin":
 		enablePlugin(s, c)
+		break
+	case "listplugins":
+		listPlugins(s, c)
 		break
 	case "rmblacklist":
 		removeBlacklistedUser(s, c)
@@ -135,6 +139,37 @@ func enablePlugin(s *discordgo.Session, c Command) {
 			}
 		}
 	}
+}
+
+func listPlugins(s *discordgo.Session, c Command) {
+	// Get the enabled plugins for this guild
+	e := Conf.Guilds[c.GuildID].EnabledPlugins
+	// Get all available plugins
+	t := make([]string, len(Manager.Plugins))
+	i := 0
+	for k := range Manager.Plugins {
+		t[i] = k
+		i++
+	}
+	// Remove "always-on" plugins like help and admin
+	t = RemoveMultipleFromArray(t, []string{"Admin", "Help"})
+	// Remove enabled plugins from the total list
+	d := RemoveMultipleFromArray(t, e)
+	// Join the lists into strings
+	enabled := strings.Join(e, ", ")
+	disabled := strings.Join(d, ", ")
+	// Get the name of the Guild
+	guild, _ := s.Guild(c.GuildID)
+	// Create a single string response
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("Plugins for %s:\n", guild.Name))
+	b.WriteString(fmt.Sprintf("> Enabled: %s\n", enabled))
+	b.WriteString(fmt.Sprintf("> Disabled: %s", disabled))
+	resp := b.String()
+	// Create a DM with the sender
+	dm, _ := s.UserChannelCreate(c.Sender.ID)
+	// DM the response
+	s.ChannelMessageSend(dm.ID, resp)
 }
 
 func removeBlacklistedUser(s *discordgo.Session, c Command) {
