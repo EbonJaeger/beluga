@@ -23,7 +23,7 @@ type PluginManager struct {
 // IsEnabled will check if the given plugin is enabled in the
 // Beluga config
 func (pm *PluginManager) IsEnabled(guild string, name string) bool {
-	return ArrayContains(Conf.Guilds[guild].EnabledPlugins, name)
+	return ArrayContains(Config.Guilds[guild].EnabledPlugins, name)
 }
 
 // IsLoaded will check if the given plugin name has an entry in our

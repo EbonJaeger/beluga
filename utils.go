@@ -145,7 +145,7 @@ func SaveConfigToFile(name string, data interface{}) error {
 		buffer  bytes.Buffer
 		saveErr error
 	)
-	path := filepath.Join(ConfigPath, name)
+	path := filepath.Join(ConfigDir, name)
 	// Create our buffer and encoder
 	writer := bufio.NewWriter(&buffer)
 	encoder := toml.NewEncoder(writer)

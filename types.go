@@ -20,6 +20,11 @@ type CommandPlugin interface {
 	Handle(s *discordgo.Session, c Command)
 }
 
+// Flags holds the global command-line flags
+type Flags struct {
+	ConfigDir string `short:"c" long:"configDir" description:"Specify the directory to use for configuration files"`
+}
+
 // UserBlacklist contains the user ID's that are blacklisted from using commands
 type UserBlacklist struct {
 	Guilds map[string][]string

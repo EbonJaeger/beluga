@@ -32,7 +32,7 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 	}
 
 	// Check if this Guild already has a configuration
-	if _, exists := Conf.Guilds[e.Guild.ID]; !exists {
+	if _, exists := Config.Guilds[e.Guild.ID]; !exists {
 		// Set defaults for this guild if no configuration is found
 		Log.Infof("Creating default configuration for Guild '%s'\n", e.Guild.Name)
 		SetGuildDefaults(e.Guild.ID)

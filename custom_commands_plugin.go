@@ -23,13 +23,13 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 				cmd := parts[0]
 				resp := parts[1]
 				// Make sure we have a map to add to
-				if Conf.Guilds[c.GuildID].CustomResponses == nil {
-					Conf.Guilds[c.GuildID].CustomResponses = make(map[string]string)
+				if Config.Guilds[c.GuildID].CustomResponses == nil {
+					Config.Guilds[c.GuildID].CustomResponses = make(map[string]string)
 				}
 				// Add the command to the config
-				Conf.Guilds[c.GuildID].CustomResponses[cmd] = resp
+				Config.Guilds[c.GuildID].CustomResponses[cmd] = resp
 				// Save the config to file
-				if err := SaveConfigToFile("beluga.conf", Conf); err != nil {
+				if err := SaveConfigToFile("beluga.conf", Config); err != nil {
 					Log.Errorf("Error while saving config: %s\n", err.Error())
 					s.ChannelMessageSend(c.ChannelID, fmt.Sprintf("Error while updating command '%s' :frowning:", cmd))
 				} else {
@@ -47,9 +47,9 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 				cmd := strings.SplitN(c.MessageNoCmd, " ", 1)[0]
 				if cmd != "" {
 					// Remove the key from the responses map
-					delete(Conf.Guilds[c.GuildID].CustomResponses, cmd)
+					delete(Config.Guilds[c.GuildID].CustomResponses, cmd)
 					// Save the config to file
-					if err := SaveConfigToFile("beluga.conf", Conf); err != nil {
+					if err := SaveConfigToFile("beluga.conf", Config); err != nil {
 						Log.Errorf("Error while saving config: %s\n", err.Error())
 						s.ChannelMessageSend(c.ChannelID, fmt.Sprintf("Error while removing command '%s' :frowning:", cmd))
 					} else {
@@ -63,7 +63,7 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 		break
 	default:
 		// Get all custom commands for the current Guild
-		commands := Conf.Guilds[c.GuildID].CustomResponses
+		commands := Config.Guilds[c.GuildID].CustomResponses
 		if resp := commands[c.Command]; resp != "" {
 			s.ChannelMessageSend(c.ChannelID, resp)
 		}

@@ -40,7 +40,7 @@ func (p *SlapPlugin) Handle(s *discordgo.Session, c Command) {
 			var resp string
 			// Check for self-harm
 			if target.Username == c.Sender.Username {
-				s.ChannelMessageSend(c.ChannelID, Conf.Guilds[c.GuildID].SlapConfig.SelfSlap)
+				s.ChannelMessageSend(c.ChannelID, Config.Guilds[c.GuildID].SlapConfig.SelfSlap)
 				return
 			}
 			// Check for slapping Beluga bot
@@ -50,9 +50,9 @@ func (p *SlapPlugin) Handle(s *discordgo.Session, c Command) {
 			// Seed random
 			rand.Seed(time.Now().Unix())
 			// Get random number
-			randNum := rand.Intn(len(Conf.Guilds[c.GuildID].SlapConfig.SlapMessages))
+			randNum := rand.Intn(len(Config.Guilds[c.GuildID].SlapConfig.SlapMessages))
 			// Get our slap message
-			resp = "*" + Conf.Guilds[c.GuildID].SlapConfig.SlapMessages[randNum] + "*"
+			resp = "*" + Config.Guilds[c.GuildID].SlapConfig.SlapMessages[randNum] + "*"
 			// Put in the target's @-mention
 			resp = strings.Replace(resp, "$USER", target.Mention(), -1)
 			// Send the response

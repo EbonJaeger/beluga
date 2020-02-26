@@ -6,12 +6,12 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type config struct {
+// RootConfig is our root configuration structure
+type RootConfig struct {
 	// Token is the Discord bot token to use to connect to Discord
 	Token string `toml:"discord_bot_token"`
 	// Guilds contains the guild-specific configurations for each guild
 	Guilds map[string]*GuildConfig
-	Facts  []string `toml:"facts,omitempty"`
 }
 
 // GuildConfig is a guild-specific configuration
@@ -28,28 +28,23 @@ type SlapPluginConfig struct {
 	SlapMessages []string `toml:"slap-messages,omitempty"`
 }
 
-// Conf is the current configuration
-var Conf config
-
-// LoadConfig will load the config
-func LoadConfig() error {
+// LoadConfig will load the config and return it
+func LoadConfig() (conf RootConfig, err error) {
 	// Get our config file
-	path := filepath.Join(ConfigPath, "beluga.conf")
-	if err := CreateFileIfNotExists(path); err != nil {
-		return err
+	path := filepath.Join(ConfigDir, "beluga.conf")
+	Log.Infof("Using configuration at '%s'\n", path)
+	if err = CreateFileIfNotExists(path); err != nil {
+		return
 	}
 	// Parse file
-	Conf = config{}
-	_, err := toml.DecodeFile(path, &Conf)
-	if err != nil {
-		return err
+	if _, err = toml.DecodeFile(path, &conf); err != nil {
+		// Validate Guild configuration section
+		if conf.Guilds == nil {
+			conf.Guilds = make(map[string]*GuildConfig)
+		}
+		return
 	}
-	// Validate Guild configuration section
-	if Conf.Guilds == nil {
-		Conf.Guilds = make(map[string]*GuildConfig)
-	}
-
-	return nil
+	return
 }
 
 // SetGuildDefaults creates a new guild configuration with defaults, adds it to
@@ -80,7 +75,7 @@ func SetGuildDefaults(guildID string) {
 		},
 	}
 	// Add the new guild to the rest of the config
-	Conf.Guilds[guildID] = &g
+	Config.Guilds[guildID] = &g
 	// Save it to the disk
-	SaveConfigToFile("beluga.conf", Conf)
+	SaveConfigToFile("beluga.conf", Config)
 }

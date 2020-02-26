@@ -106,9 +106,9 @@ func (p *AdminPlugin) disablePlugin(s *discordgo.Session, c Command) {
 				p.cMu.Lock()
 				defer p.cMu.Unlock()
 				// Remove the plugin from the guild config
-				Conf.Guilds[guild.ID].EnabledPlugins = RemoveFromStringArray(Conf.Guilds[guild.ID].EnabledPlugins, plugin)
+				Config.Guilds[guild.ID].EnabledPlugins = RemoveFromStringArray(Config.Guilds[guild.ID].EnabledPlugins, plugin)
 				// Save config to file
-				if err := SaveConfigToFile("beluga.conf", Conf); err == nil {
+				if err := SaveConfigToFile("beluga.conf", Config); err == nil {
 					s.ChannelMessageSend(c.ChannelID, "Plugin disabled! :smiley:")
 				} else {
 					Log.Errorf("Error saving config file: %s\n", err.Error())
@@ -139,9 +139,9 @@ func (p *AdminPlugin) enablePlugin(s *discordgo.Session, c Command) {
 				p.cMu.Lock()
 				defer p.cMu.Unlock()
 				// Add the plugin to the guild config
-				Conf.Guilds[guild.ID].EnabledPlugins = append(Conf.Guilds[guild.ID].EnabledPlugins, plugin)
+				Config.Guilds[guild.ID].EnabledPlugins = append(Config.Guilds[guild.ID].EnabledPlugins, plugin)
 				// Save config to file
-				if err := SaveConfigToFile("beluga.conf", Conf); err == nil {
+				if err := SaveConfigToFile("beluga.conf", Config); err == nil {
 					s.ChannelMessageSend(c.ChannelID, "Plugin enabled! :smiley:")
 				} else {
 					Log.Errorf("Error saving config file: %s\n", err.Error())
@@ -158,7 +158,7 @@ func (p *AdminPlugin) listPlugins(s *discordgo.Session, c Command) {
 	// Grab a lock on the config
 	p.cMu.Lock()
 	// Get the enabled plugins for this guild
-	e := Conf.Guilds[c.GuildID].EnabledPlugins
+	e := Config.Guilds[c.GuildID].EnabledPlugins
 	// Get all available plugins
 	t := make([]string, len(Manager.Plugins))
 	i := 0

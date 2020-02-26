@@ -15,6 +15,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Config is our global Config object
+var Config RootConfig
+
 // Session is our Discord session
 var Session *discordgo.Session
 
@@ -24,50 +27,38 @@ var Log *waterlog.WaterLog
 // Manager is our plugin manager for third-party plugins
 var Manager *PluginManager
 
-// ConfigPath is the path to all Beluga-related configs
-var ConfigPath string
+// ConfigDir is the path to all Beluga-related configs
+var ConfigDir string
 
 // Blacklist is the list of users who are blacklisted from using commands
 var Blacklist UserBlacklist
 
 // NewBeluga creates a new Beluga instance, and connects to Discord
-func NewBeluga() {
+func NewBeluga(cliFlags Flags) {
 	// Initialize logging
 	Log = waterlog.New(os.Stdout, "", log2.Ltime)
 	Log.SetLevel(level.Info)
 	Log.SetFormat(format.Min)
 
-	// Get the current user
-	var (
-		currentUser *user.User
-		getUserErr  error
-	)
-	currentUser, getUserErr = user.Current()
-	if getUserErr != nil {
-		Log.Fatalf("Unable to get the current user: %s\n", getUserErr.Error())
-	}
-	// Get the curent user's config directory
-	ConfigPath = filepath.Join(currentUser.HomeDir, ".config", "beluga")
-	// Check if the config directory exists
-	if _, err := os.Stat(ConfigPath); err != nil {
-		if err == os.ErrNotExist {
-			// Attempt to create the config directory
-			if err := os.Mkdir(ConfigPath, 0755); err != nil {
-				Log.Fatalf("Unable to create config directory: %s\n", err.Error())
-			}
-		} else {
+	// Get the path to use for config files
+	ConfigDir = cliFlags.ConfigDir
+	// Check if we have a path
+	if ConfigDir == "" {
+		createDefaultConfigDir()
+	} else {
+		// Make sure the directory exists
+		if _, err := os.Stat(ConfigDir); err != nil {
+			// Abort on error
 			Log.Fatalf("Error while looking for config directory: %s\n", err.Error())
 		}
 	}
 
-	// Load our config
-	if err := LoadConfig(); err != nil {
-		Log.Fatalf("Error while loading config: %s\n", err.Error())
-	}
-	// Load our blacklist
+	// Load our config and blacklist
 	var readErr error
-	Blacklist, readErr = ReadBlacklist()
-	if readErr != nil {
+	if Config, readErr = LoadConfig(); readErr != nil {
+		Log.Fatalf("Error while loading config: %s\n", readErr.Error())
+	}
+	if Blacklist, readErr = LoadBlacklist(); readErr != nil {
 		Log.Fatalf("Error while loading or creating user blacklist: %s\n", readErr.Error())
 	}
 
@@ -81,7 +72,7 @@ func NewBeluga() {
 
 	// Create our Discord client
 	Log.Infoln("Creating Discord session")
-	s, err := discordgo.New("Bot " + Conf.Token)
+	s, err := discordgo.New("Bot " + Config.Token)
 	if err != nil {
 		Log.Fatalf("Unable to initialize discordgo: %s\n", err.Error())
 	}
@@ -111,4 +102,29 @@ func NewBeluga() {
 		Log.Fatalf("Error while closing Discord connection: %s\n", err.Error())
 	}
 	Log.Goodln("Beluga shut down successfully!")
+}
+
+func createDefaultConfigDir() {
+	// Get the current user
+	var (
+		currentUser *user.User
+		getUserErr  error
+	)
+	currentUser, getUserErr = user.Current()
+	if getUserErr != nil {
+		Log.Fatalf("Unable to get the current user: %s\n", getUserErr.Error())
+	}
+	// Get the curent user's config directory
+	ConfigDir = filepath.Join(currentUser.HomeDir, ".config", "beluga")
+	// Check if the config directory exists
+	if _, err := os.Stat(ConfigDir); err != nil {
+		if os.IsNotExist(err) {
+			// Attempt to create the config directory
+			if err := os.Mkdir(ConfigDir, 0755); err != nil {
+				Log.Fatalf("Unable to create config directory: %s\n", err.Error())
+			}
+		} else {
+			Log.Fatalf("Error while looking for config directory: %s\n", err.Error())
+		}
+	}
 }

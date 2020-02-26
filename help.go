@@ -22,10 +22,10 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 	var b strings.Builder
 	b.WriteString(" **Commands for Beluga Bot:**\n")
 	b.WriteString("> `!help` - Show this help message\n")
-	if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Hunter2") {
+	if ArrayContains(Config.Guilds[c.GuildID].EnabledPlugins, "Hunter2") {
 		b.WriteString("> `!hunter2` - Something secret might happen if you use this command...\n")
 	}
-	if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Slap") {
+	if ArrayContains(Config.Guilds[c.GuildID].EnabledPlugins, "Slap") {
 		b.WriteString("> `!slap <user>` - Creatively slap a user. Name can be a mention, or part of their username\n")
 	}
 	if MemberHasPermission(s, c.GuildID, c.Sender.ID, discordgo.PermissionAdministrator) {
@@ -35,7 +35,7 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 		b.WriteString("> `!enableplugin <plugin>` - Enable a plugin for this server\n")
 		b.WriteString("> `!listplugins` - List all enabled and disabled plugins for this server\n")
 		b.WriteString("> `!disableplugin <plugin>` - Disable a plugin for this server\n")
-		if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Commands") {
+		if ArrayContains(Config.Guilds[c.GuildID].EnabledPlugins, "Commands") {
 			b.WriteString("> `!addcommand <command> <response>` - Add a custom command that the bot will respond to\n")
 			b.WriteString("> `!rmcommand <command>` - Remove a custom command\n")
 		}
