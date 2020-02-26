@@ -12,11 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	// AdministratorPerm is the Discord administrator permission value
-	AdministratorPerm = 0x8
-)
-
 // ArrayContains checks if a given element is in a string
 // array
 func ArrayContains(arr []string, element string) bool {

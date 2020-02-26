@@ -28,7 +28,7 @@ func (h *helpPlugin) Handle(s *discordgo.Session, c Command) {
 	if ArrayContains(Conf.Guilds[c.GuildID].EnabledPlugins, "Slap") {
 		b.WriteString("> `!slap <user>` - Creatively slap a user. Name can be a mention, or part of their username\n")
 	}
-	if MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
+	if MemberHasPermission(s, c.GuildID, c.Sender.ID, discordgo.PermissionAdministrator) {
 		b.WriteString("**Administrator Commands:**\n")
 		b.WriteString("> `!blacklist <user>` - Add a user to the blacklist so they can't run any bot commands\n")
 		b.WriteString("> `!rmblacklist <user>` - Remove a user from the blacklist\n")

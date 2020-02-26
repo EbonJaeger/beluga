@@ -3,12 +3,16 @@ package beluga
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 // AdminPlugin is our admin plugin struct
-type AdminPlugin struct{}
+type AdminPlugin struct {
+	blMu sync.Mutex // Blacklist lock
+	cMu  sync.Mutex // Config lock
+}
 
 // BelugaAdmin is our admin plugin instance
 var BelugaAdmin AdminPlugin
@@ -16,33 +20,33 @@ var BelugaAdmin AdminPlugin
 // Handle handles all admin-related commands
 func (p *AdminPlugin) Handle(s *discordgo.Session, c Command) {
 	// Check if the sender is an administrator
-	if !MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
+	if !MemberHasPermission(s, c.GuildID, c.Sender.ID, discordgo.PermissionAdministrator) {
 		s.ChannelMessageSend(c.ChannelID, "You don't have permission to perform that command! Get outa here! :angry:")
 		return
 	}
 	// Send to the right sub-handler
 	switch c.Command {
 	case "blacklist":
-		addBlacklistedUser(s, c)
+		p.addBlacklistedUser(s, c)
 		break
 	case "disableplugin":
-		disablePlugin(s, c)
+		p.disablePlugin(s, c)
 		break
 	case "enableplugin":
-		enablePlugin(s, c)
+		p.enablePlugin(s, c)
 		break
 	case "listplugins":
-		listPlugins(s, c)
+		p.listPlugins(s, c)
 		break
 	case "rmblacklist":
-		removeBlacklistedUser(s, c)
+		p.removeBlacklistedUser(s, c)
 		break
 	default:
 		return
 	}
 }
 
-func addBlacklistedUser(s *discordgo.Session, c Command) {
+func (p *AdminPlugin) addBlacklistedUser(s *discordgo.Session, c Command) {
 	// Check for args
 	if len(c.MessageNoCmd) > 0 {
 		// Split args
@@ -60,10 +64,13 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 				return
 			}
 			// Check if the user is an admin
-			if MemberHasPermission(s, c.GuildID, user.ID, AdministratorPerm) {
+			if MemberHasPermission(s, c.GuildID, user.ID, discordgo.PermissionAdministrator) {
 				s.ChannelMessageSend(c.ChannelID, "I cant blacklist that user, are you kidding? :frowning:")
 				return
 			}
+			// Grab a lock on the blacklist
+			p.blMu.Lock()
+			defer p.blMu.Unlock()
 			// Check if user is already blacklisted
 			if ArrayContains(Blacklist.Guilds[guild.ID], user.ID) {
 				s.ChannelMessageSend(c.ChannelID, "That user is already blacklisted!")
@@ -81,7 +88,7 @@ func addBlacklistedUser(s *discordgo.Session, c Command) {
 	}
 }
 
-func disablePlugin(s *discordgo.Session, c Command) {
+func (p *AdminPlugin) disablePlugin(s *discordgo.Session, c Command) {
 	// Check for args
 	if len(c.MessageNoCmd) > 0 {
 		// Split args
@@ -95,6 +102,9 @@ func disablePlugin(s *discordgo.Session, c Command) {
 			plugin := strings.Title(raw)
 			// Check if the plugin exists and is enabled
 			if Manager.IsLoaded(plugin) && Manager.IsEnabled(guild.ID, plugin) {
+				// Grab a lock on the config
+				p.cMu.Lock()
+				defer p.cMu.Unlock()
 				// Remove the plugin from the guild config
 				Conf.Guilds[guild.ID].EnabledPlugins = RemoveFromStringArray(Conf.Guilds[guild.ID].EnabledPlugins, plugin)
 				// Save config to file
@@ -111,7 +121,7 @@ func disablePlugin(s *discordgo.Session, c Command) {
 	}
 }
 
-func enablePlugin(s *discordgo.Session, c Command) {
+func (p *AdminPlugin) enablePlugin(s *discordgo.Session, c Command) {
 	// Check for args
 	if len(c.MessageNoCmd) > 0 {
 		// Split args
@@ -125,6 +135,9 @@ func enablePlugin(s *discordgo.Session, c Command) {
 			plugin := strings.Title(raw)
 			// Check if the plugin exists and isn't already enabled
 			if Manager.IsLoaded(plugin) && !Manager.IsEnabled(c.GuildID, plugin) {
+				// Grab a lock on the config
+				p.cMu.Lock()
+				defer p.cMu.Unlock()
 				// Add the plugin to the guild config
 				Conf.Guilds[guild.ID].EnabledPlugins = append(Conf.Guilds[guild.ID].EnabledPlugins, plugin)
 				// Save config to file
@@ -141,7 +154,9 @@ func enablePlugin(s *discordgo.Session, c Command) {
 	}
 }
 
-func listPlugins(s *discordgo.Session, c Command) {
+func (p *AdminPlugin) listPlugins(s *discordgo.Session, c Command) {
+	// Grab a lock on the config
+	p.cMu.Lock()
 	// Get the enabled plugins for this guild
 	e := Conf.Guilds[c.GuildID].EnabledPlugins
 	// Get all available plugins
@@ -151,6 +166,8 @@ func listPlugins(s *discordgo.Session, c Command) {
 		t[i] = k
 		i++
 	}
+	// Unlock again
+	p.cMu.Unlock()
 	// Remove "always-on" plugins like help and admin
 	t = RemoveMultipleFromArray(t, []string{"Admin", "Help"})
 	// Remove enabled plugins from the total list
@@ -172,7 +189,7 @@ func listPlugins(s *discordgo.Session, c Command) {
 	s.ChannelMessageSend(dm.ID, resp)
 }
 
-func removeBlacklistedUser(s *discordgo.Session, c Command) {
+func (p *AdminPlugin) removeBlacklistedUser(s *discordgo.Session, c Command) {
 	// Check for args
 	if len(c.MessageNoCmd) > 0 {
 		// Split args
@@ -189,6 +206,9 @@ func removeBlacklistedUser(s *discordgo.Session, c Command) {
 				s.ChannelMessageSend(c.ChannelID, "You must be halucinating. There is noone here by that name.")
 				return
 			}
+			// Grab a lock on the blacklist
+			p.blMu.Lock()
+			defer p.blMu.Unlock()
 			// Check if user is actually blacklisted
 			if !ArrayContains(Blacklist.Guilds[guild.ID], user.ID) {
 				s.ChannelMessageSend(c.ChannelID, "That user isn't blacklisted!")

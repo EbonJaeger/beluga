@@ -16,7 +16,7 @@ var Commands CustomCommandsPlugin
 func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 	switch c.Command {
 	case "addcommand":
-		if MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
+		if MemberHasPermission(s, c.GuildID, c.Sender.ID, discordgo.PermissionAdministrator) {
 			if len(c.MessageNoCmd) > 0 {
 				// Split out the first word
 				parts := strings.SplitN(c.MessageNoCmd, " ", 2)
@@ -41,7 +41,7 @@ func (p *CustomCommandsPlugin) Handle(s *discordgo.Session, c Command) {
 		}
 		break
 	case "rmcommand":
-		if MemberHasPermission(s, c.GuildID, c.Sender.ID, AdministratorPerm) {
+		if MemberHasPermission(s, c.GuildID, c.Sender.ID, discordgo.PermissionAdministrator) {
 			if len(c.MessageNoCmd) > 0 {
 				// Get the command
 				cmd := strings.SplitN(c.MessageNoCmd, " ", 1)[0]
