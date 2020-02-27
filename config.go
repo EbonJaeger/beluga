@@ -37,7 +37,7 @@ func LoadConfig() (conf RootConfig, err error) {
 		return
 	}
 	// Parse file
-	if _, err = toml.DecodeFile(path, &conf); err != nil {
+	if _, err = toml.DecodeFile(path, &conf); err == nil {
 		// Validate Guild configuration section
 		if conf.Guilds == nil {
 			conf.Guilds = make(map[string]*GuildConfig)

@@ -39,9 +39,6 @@ func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 	}
 
 	Log.Infof("Joined Guild: {%s}\n", e.Guild.ID)
-
-	cID := e.Guild.SystemChannelID
-	s.ChannelMessageSend(cID, "Beluga is ready! Type `!help` for commands list!")
 }
 
 // OnMessageCreate handles when a regular message is sent in a channel
