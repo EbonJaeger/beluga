@@ -47,6 +47,13 @@ func LoadConfig() (conf RootConfig, err error) {
 	return
 }
 
+// SetDefaults sets any sane default configuration options
+func SetDefaults() RootConfig {
+	return RootConfig{
+		Token: "",
+	}
+}
+
 // SetGuildDefaults creates a new guild configuration with defaults, adds it to
 // the existing configuration, and saves it to the disk
 func SetGuildDefaults(guildID string) {

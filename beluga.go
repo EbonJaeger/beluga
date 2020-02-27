@@ -53,11 +53,34 @@ func NewBeluga(cliFlags Flags) {
 		}
 	}
 
-	// Load our config and blacklist
+	// Load our config
 	var readErr error
 	if Config, readErr = LoadConfig(); readErr != nil {
 		Log.Fatalf("Error while loading config: %s\n", readErr.Error())
 	}
+	// Set defaults if its a blank config
+	if Config.Token == "" && len(Config.Guilds) == 0 {
+		Config = SetDefaults()
+		if err := SaveConfigToFile("beluga.conf", Config); err != nil {
+			Log.Fatalf("Error saving default config: %s\n", err.Error())
+		}
+	}
+
+	// Check if a bot token is configured
+	if Config.Token == "" {
+		Log.Errorln("+-------------------------------------------------------------------------------------+")
+		Log.Errorln("| No Discord bot token is configured!                                                 |")
+		Log.Errorln("|                                                                                     |")
+		Log.Errorln("| Create a Discord bot here:                                                          |")
+		Log.Errorln("| https://discordapp.com/developers/applications/me                                   |")
+		Log.Errorln("|                                                                                     |")
+		Log.Errorln("| Copy the token into your config file, and add the bot to your server with this URL: |")
+		Log.Errorln("| https://discordapp.com/oauth2/authorize?client_id=<BOT CLIENT ID>&scope=bot         |")
+		Log.Errorln("+-------------------------------------------------------------------------------------+")
+		os.Exit(1)
+	}
+
+	// Load the user blacklist
 	if Blacklist, readErr = LoadBlacklist(); readErr != nil {
 		Log.Fatalf("Error while loading or creating user blacklist: %s\n", readErr.Error())
 	}
