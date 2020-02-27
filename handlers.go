@@ -27,26 +27,21 @@ func OnReady(s *discordgo.Session, e *discordgo.Ready) {
 func OnGuildCreate(s *discordgo.Session, e *discordgo.GuildCreate) {
 	// Make sure the guild is available
 	if e.Guild.Unavailable {
-		Log.Warnf("Attempted to join Guild '%s', but it was unavailable\n", e.Guild.Name)
+		Log.Warnf("Attempted to join {%s}, but it was unavailable\n", e.Guild.ID)
 		return
 	}
 
 	// Check if this Guild already has a configuration
 	if _, exists := Config.Guilds[e.Guild.ID]; !exists {
 		// Set defaults for this guild if no configuration is found
-		Log.Infof("Creating default configuration for Guild '%s'\n", e.Guild.Name)
+		Log.Infof("Creating default configuration for {%s}\n", e.Guild.ID)
 		SetGuildDefaults(e.Guild.ID)
 	}
 
-	Log.Infof("Connected to the '%s' guild\n", e.Guild.Name)
+	Log.Infof("Joined Guild: {%s}\n", e.Guild.ID)
 
-	// Join the correct channel
-	for _, channel := range e.Guild.Channels {
-		if channel.ID == e.Guild.ID {
-			_, _ = s.ChannelMessageSend(channel.ID, "Beluga is ready!")
-			return
-		}
-	}
+	cID := e.Guild.SystemChannelID
+	s.ChannelMessageSend(cID, "Beluga is ready! Type `!help` for commands list!")
 }
 
 // OnMessageCreate handles when a regular message is sent in a channel
